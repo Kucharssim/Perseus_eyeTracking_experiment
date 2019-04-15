@@ -17,11 +17,12 @@ import pandas
 mse = Keyboard()
 
 # Get game structure values
-gloc=os.path.join(DIR,'games.csv')
+gloc=os.path.join(DIR,'games\games_own.csv')
 df_own = pandas.read_csv(gloc)
 game_vectors_own = df_own.values
 
-df_other = pandas.read_csv('games_other.csv')
+gloc2 = os.path.join('games\games_other.csv')
+df_other = pandas.read_csv(gloc2)
 game_vectors_other = df_other.values
 
 

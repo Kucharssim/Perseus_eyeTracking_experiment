@@ -14,8 +14,6 @@ from pygaze.eyetracker import EyeTracker
 import pygaze.libtime as timer
 import pandas
 
-mse = Keyboard()
-
 # Get game structure values
 gloc=os.path.join(DIR,'games\games_own.csv')
 df_own = pandas.read_csv(gloc)
@@ -39,7 +37,7 @@ cy=yax/2
 cx=xax/2
 
 ### Set size of game matrix relative to screen with 'margin'.
-margin = 0.6
+margin = 0.7
 side=yax*margin
 t_side=side/p1
 tloc=t_side/p1
@@ -48,7 +46,10 @@ owncol = (255,255,255)
 othercol = (255,255,255)
 
 disp = Display(dispsize=DISPSIZE)
+mse = Mouse(visible=False, timeout=False)
+
 gamescreen = Screen(dispsize=DISPSIZE)
+
 #tracker = EyeTracker(disp)
 
 
@@ -107,43 +108,45 @@ rounds = 4
 
 
 
-
-
+tracker = EyeTracker(disp)
 ##Experiment
+tracker.start_recording()
 choice=[]
 
 wait=True
-while wait:
+while wait==True:
     disp.fill(introscreen)
     disp.show()
-    pressed = mse.get_key()
-    if pressed[0]>0:
+    pressed = mse.get_pressed()
+    if sum(pressed)>0:
         wait=False
-
+        
+pressed = [0,0,0] 
 wait=True
-while wait:
+while wait==True:
     tryscreen = exscreen
-    tryscreen.draw_text('Press the correct answer (j)', pos=(((1-margin)/4)*xax,((1-margin)/4)*yax), fontsize=20)
+    tryscreen.draw_text('Press the \n middle button', pos=(((1-margin)/4)*xax,((1-margin)/4)*yax), fontsize=20)
     disp.fill(tryscreen)
     disp.show()
-    pressed = mse.get_key()
-    if pressed[0]=='j':
+    resp = mse.get_pressed()
+    if resp[2]==1:
         wait=False
- 
+
+pressed = [0,0,0] 
 wait=True
-while wait:
+while wait==True:
     disp.fill(introscreen)
     disp.show()
-    pressed = mse.get_key()
-    if pressed[0]>0:
+    print(pressed)
+    pressed = mse.get_pressed()
+    print(pressed)
+    if sum(pressed)>0:
         wait=False
-
-tracker = EyeTracker(disp)
+         
 tracker.calibrate()
 
-
 ######### Trials
-tracker.start_recording()
+
 for r in range(rounds):
     tracker.status_msg('Trial with matrix {}'.format(r))
     tracker.log('TRIALSTART')
@@ -193,10 +196,11 @@ for r in range(rounds):
     while wait==True:
         disp.fill(gamescreen)
         disp.show()
-        response = mse.get_key()
-        if response[0]>0:
-            choice.append(response[0])
-        if response[0]>0:
+        pressed = mse.get_pressed()
+        clicked = mse.get_clicked()
+        if sum(pressed)>0:
+            choice.append(clicked)
+        if sum(pressed)>0:
             wait=False
     tracker.log('trial_offset')
     tracker.log('TRIALEND')

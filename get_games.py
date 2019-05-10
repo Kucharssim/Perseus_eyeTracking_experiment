@@ -11,8 +11,10 @@ from pygaze.screen import Screen
 from pygaze.keyboard import Keyboard
 from pygaze.mouse import Mouse
 from pygaze.eyetracker import EyeTracker
+from psychopy import event
 import pygaze.libtime as timer
 import pandas
+import time
 
 # Get game structure values
 gloc=os.path.join(DIR,'games\games_own.csv')
@@ -46,7 +48,7 @@ owncol = (255,255,255)
 othercol = (255,255,255)
 
 disp = Display(dispsize=DISPSIZE)
-mse = Mouse(visible=False, timeout=False)
+mse = Mouse(visible=False, timeout=10)
 
 gamescreen = Screen(dispsize=DISPSIZE)
 
@@ -119,8 +121,10 @@ while wait==True:
     disp.show()
     pressed = mse.get_pressed()
     if sum(pressed)>0:
+        event.clearEvents(eventType='mouse')
         wait=False
-        
+
+      
 pressed = [0,0,0] 
 wait=True
 while wait==True:
@@ -130,19 +134,29 @@ while wait==True:
     disp.show()
     resp = mse.get_pressed()
     if resp[2]==1:
+        event.clearEvents(eventType='mouse')
         wait=False
 
-pressed = [0,0,0] 
+timer.pause(1000)
+
+pressed = () 
 wait=True
+print(wait)
+disp.fill(introscreen)
+disp.show()
 while wait==True:
+    print(pressed)
+    pressed = mse.get_pressed()
+    introscreen.draw_text(str(pressed), pos=(((1-margin)/4)*xax,((1-margin)/4)*yax), fontsize=20)
     disp.fill(introscreen)
     disp.show()
     print(pressed)
-    pressed = mse.get_pressed()
-    print(pressed)
     if sum(pressed)>0:
+        event.clearEvents(eventType='mouse')
         wait=False
-         
+    print(wait)
+ 
+        
 tracker.calibrate()
 
 ######### Trials
@@ -193,15 +207,23 @@ for r in range(rounds):
             xcor += t_side
         ycor += t_side
     wait=True
+    disp.fill(gamescreen)
+    disp.show()
     while wait==True:
-        disp.fill(gamescreen)
-        disp.show()
-        pressed = mse.get_pressed()
-        clicked = mse.get_clicked()
-        if sum(pressed)>0:
-            choice.append(clicked)
-        if sum(pressed)>0:
+        pressed = mse.get_clicked()
+#        if not pressed[0] is None:
+#            choice.append(pressed)
+        if not pressed[0] is None:
+            choice.append(pressed)
+            pressed2=[0,0,0]
             wait=False
+    wait = True
+# So that humans do not hold a button through all trials (Kahveci & Kucharsky, 2019)
+    while wait:
+            pressed2 = mse.get_clicked()
+            if pressed2[0] is None:
+                wait=False
+
     tracker.log('trial_offset')
     tracker.log('TRIALEND')
         

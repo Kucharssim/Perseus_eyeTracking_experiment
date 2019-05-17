@@ -47,7 +47,7 @@ tloc=t_side/p1
 owncol = (255,255,255)
 othercol = (255,255,255)
 
-disp = Display(dispsize=DISPSIZE)
+disp = Display(dispsize=DISPSIZE, screennr=2)
 mse = Mouse(visible=False, timeout=10)
 
 gamescreen = Screen(dispsize=DISPSIZE)
@@ -59,11 +59,11 @@ fixscr = Screen(dispsize=DISPSIZE)
 fixscr.draw_fixation(fixtype='cross', diameter=8)
 
 introscreen = Screen(dispsize=DISPSIZE)
-introscreen.draw_text("Oi, prolet, get ready", fontsize=30)
+introscreen.draw_text("Welcome to the experiment", fontsize=30)
 introscreen.draw_text("\n\n\n (To proceed, press any key)", fontsize=25)
 
 istrscreen = Screen(dispsize=DISPSIZE)
-istrscreen.draw_text("Let's play a game", fontsize=30)
+istrscreen.draw_text("In this experiment, you will \n play a sequence of games \n like the one displayed on the right", fontsize=30)
 istrscreen.draw_text("You", fontsize=25)
 
 exscreen = Screen(dispsize=DISPSIZE)
@@ -112,7 +112,6 @@ rounds = 4
 
 tracker = EyeTracker(disp)
 ##Experiment
-tracker.start_recording()
 choice=[]
 
 wait=True
@@ -157,8 +156,12 @@ while wait==True:
     print(wait)
  
         
+dsp = Display(dispsize=DISPSIZE, screennr=2)
+tracker = EyeTracker(dsp, trackertype='eyelink')
 tracker.calibrate()
-
+tracker.close()
+dsp.close()
+tracker.start_recording()
 ######### Trials
 
 for r in range(rounds):

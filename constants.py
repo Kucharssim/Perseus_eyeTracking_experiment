@@ -9,7 +9,7 @@ import pandas
 
 
 DISPTYPE = 'psychopy'
-DISPSIZE = (1280,720)
+DISPSIZE = (1920,1080)
 
 TRACKERTYPE = 'eyelink'
 DUMMYMODE = True
